@@ -1,0 +1,39 @@
+#messages {
+    width: 100%;
+    max-width: 1000px;
+    height: 100%;
+    padding: 40px 0;
+    padding-bottom: 90px;
+    background-color: rgba(16, 32, 12, 0.24);
+    overflow-y:auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.message {
+    width: max-content;
+    max-width: 500px;
+    height: max-content;
+    min-height: 25px;
+    border-radius: 10px;
+    display: flex;
+    word-break: break-all;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    padding: 6px 10px;
+    margin: 8px 0;
+    color: rgb(223, 223, 223);
+    font-family: "Franklin Gothic Medium", "Arial Narrow", Arial, sans-serif;
+    background-color: rgb(38, 70, 38);
+}
+
+.my-message {
+    margin: 8px 15px 0 auto;
+}
+
+.not-my-message {
+    margin: 8px auto 0 15px;
+    background-color: inherit;
+    border: solid 1px rgb(35, 65, 35);
+}

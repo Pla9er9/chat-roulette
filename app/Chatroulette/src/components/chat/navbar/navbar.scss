@@ -1,0 +1,26 @@
+nav {
+    width: 100%;
+    height: 60px;
+    background-color: #101f0d;
+    display: flex;
+    align-items: center;
+
+    p {
+        color: #7fb373;
+        font-family: Poppins, sans-serif;
+        margin: 0 45px;
+    }
+
+    button {
+        width: 90px;
+        height: 30px;
+        border: none;
+        background-color: #f56946;
+        color: #490606;
+        font-family: Poppins, sans-serif;
+        font-size: 14px;
+        cursor: pointer;
+        margin-right: 25px;
+        border-radius: 5px;
+    }
+}
