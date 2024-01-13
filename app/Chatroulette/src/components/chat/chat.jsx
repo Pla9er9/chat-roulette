@@ -4,16 +4,12 @@ import Messages from "./messages/messages";
 import Navbar from "./navbar/navbar";
 import PropTypes from "prop-types";
 
-class Info {
-    constructor() {
-        this.status = ""
-        this.online = "0"
-    }
-}
-
 function Chat({ stop }) {
     let [sendMessage, setSendMessage] = useState(undefined);
-    let [info, setInfo] = useState(new Info());
+    let [info, setInfo] = useState({
+        status: "",
+        online: "0"
+    });
     let [messages, setMessages] = useState([]);
     let [socket, setSocket] = useState(null);
 
@@ -30,24 +26,25 @@ function Chat({ stop }) {
                 console.log(msg)
                 if (msg.data.startsWith("-server-online-")) {
                     console.log(msg.data);
-                    setInfo((info) => {
-                        info.online = msg.data.replace("-server-online-", "")
-                        return info
-                    });
+                    console.log(msg.data.replace("-server-online-", ""))
+                    setInfo({
+                        ...info,
+                        online: msg.data.replace("-server-online-", "")
+                    })
                     return;
                 }
                 switch (msg.data) {
                     case "-server-found-":
                         alert("FOUND")
-                        setInfo((i) => {
-                            info.status = "Połączono"
-                            return info
+                        setInfo({
+                            ...info,
+                            status: "Połączono"
                         })
                         break;
                     case "-server-disconected-":
-                        setInfo((i) => {
-                            i.status = "Szukanie obcego"
-                            return info
+                        setInfo({
+                            ...info,
+                            status: "Szukanie obcego"
                         })
                         break
                     default:
