@@ -62,22 +62,28 @@ func WsEndpoint(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("- Connect")
 	users = append(users, user)
 	for _, u := range users {
+		err := u.Conn.WriteMessage(websocket.TextMessage, []byte("LOL"))
+		if err != nil {
+			fmt.Println(err)
+		}
 		u.WriteMessage(fmt.Sprint("-server-online-", len(users)))
 	}
+	fmt.Println(len(users))
+	fmt.Println(users)
 
+	closeHandler := conn.CloseHandler()
 	conn.SetCloseHandler(func(code int, text string) error {
 		fmt.Println("- Disconect")
-		// var index = 0
-		// for i, u := range users {
-		for _, u := range users {
-			// if u.Id == user.Id {
-			// index = i
-			// } else {
-			u.WriteMessage(fmt.Sprint("-server-online-", len(users)-1))
-			// }
+		var index = 0
+		for i, u := range users {
+			if u.Id == user.Id {
+				index = i
+			} else {
+				u.WriteMessage(fmt.Sprint("-server-online-", len(users)-1))
+			}
 		}
 
-		// users = remove[User](users, index)
+		users = remove[User](users, index)
 		// for i, r := range rooms {
 		// 	if r.User1.Id == user.Id {
 		// 		rooms[i].User1 = User{}
@@ -90,40 +96,39 @@ func WsEndpoint(w http.ResponseWriter, r *http.Request) {
 		// 		rooms = remove[*Room](rooms, i)
 		// 	}
 		// }
-		return nil
+		return closeHandler(code, text)
 	})
-
 	// openRoom := start(&user)
 	// if openRoom != nil {
 	// 	return
 	// }
 
-	// for {
-	// 	_, m, err := conn.ReadMessage()
-	// 	msg := string(m)
-	// 	if err != nil {
-	// 		fmt.Println(err.Error())
-	// 		conn.Close()
-	// 		break
-	// 	}
+	for {
+		_, m, err := conn.ReadMessage()
+		msg := string(m)
+		if err != nil {
+			fmt.Println(err.Error())
+			conn.Close()
+			break
+		}
+		log.Println(msg)
+		// if msg == "-skip-" {
+		// 	skip(&user, openRoom)
+		// } else if msg == "-stop-" {
+		// 	stop(&user, openRoom)
+		// } else if msg == "-start-" {
+		// 	start(&user)
+		// }
 
-	// 	if msg == "-skip-" {
-	// 		skip(&user, openRoom)
-	// 	} else if msg == "-stop-" {
-	// 		stop(&user, openRoom)
-	// 	} else if msg == "-start-" {
-	// 		start(&user)
-	// 	}
-
-	// 	message, cut := strings.CutPrefix(msg, "-m-")
-	// 	if openRoom.IsFull() && cut {
-	// 		if openRoom.User1.Id == user.Id {
-	// 			openRoom.User2.WriteMessage(message)
-	// 		} else {
-	// 			openRoom.User1.WriteMessage(message)
-	// 		}
-	// 	}
-	// }
+		// message, cut := strings.CutPrefix(msg, "-m-")
+		// if openRoom.IsFull() && cut {
+		// 	if openRoom.User1.Id == user.Id {
+		// 		openRoom.User2.WriteMessage(message)
+		// 	} else {
+		// 		openRoom.User1.WriteMessage(message)
+		// 	}
+		// }
+	}
 }
 
 func stop(user *User, room *Room) {
