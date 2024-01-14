@@ -8,7 +8,6 @@ import (
 type User struct {
 	Id          uuid.UUID
 	Conn        *websocket.Conn
-	UsersMetIds []uuid.UUID
 }
 
 

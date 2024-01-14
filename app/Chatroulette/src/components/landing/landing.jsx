@@ -12,7 +12,7 @@ function Landing({ onclick }) {
                 >
                     random
                 </span>{" "}
-                <br /> persons
+                <br /> people
             </h1>
             <button onClick={onclick}>
                 Try now

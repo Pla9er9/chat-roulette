@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	// "strings"
+	"strings"
 
 	. "chat_roulete/models"
 
@@ -56,20 +56,16 @@ func WsEndpoint(w http.ResponseWriter, r *http.Request) {
 	user := User{
 		Id:          id,
 		Conn:        conn,
-		UsersMetIds: []uuid.UUID{},
 	}
 
 	fmt.Println("- Connect")
 	users = append(users, user)
 	for _, u := range users {
-		err := u.Conn.WriteMessage(websocket.TextMessage, []byte("LOL"))
 		if err != nil {
 			fmt.Println(err)
 		}
 		u.WriteMessage(fmt.Sprint("-server-online-", len(users)))
 	}
-	fmt.Println(len(users))
-	fmt.Println(users)
 
 	closeHandler := conn.CloseHandler()
 	conn.SetCloseHandler(func(code int, text string) error {
@@ -84,24 +80,25 @@ func WsEndpoint(w http.ResponseWriter, r *http.Request) {
 		}
 
 		users = remove[User](users, index)
-		// for i, r := range rooms {
-		// 	if r.User1.Id == user.Id {
-		// 		rooms[i].User1 = User{}
-		// 		break
-		// 	} else if r.User2.Id == user.Id {
-		// 		rooms[i].User2 = User{}
-		// 		break
-		// 	}
-		// 	if (rooms[i].User1.Id == User{}.Id && rooms[i].User2.Id == User{}.Id) {
-		// 		rooms = remove[*Room](rooms, i)
-		// 	}
-		// }
+		for i, r := range rooms {
+			if r.User1.Id == user.Id {
+				rooms[i].User1 = User{}
+				break
+			} else if r.User2.Id == user.Id {
+				rooms[i].User2 = User{}
+				break
+			}
+			if (rooms[i].User1.Id == User{}.Id && rooms[i].User2.Id == User{}.Id) {
+				rooms = remove[*Room](rooms, i)
+			}
+		}
 		return closeHandler(code, text)
 	})
-	// openRoom := start(&user)
-	// if openRoom != nil {
-	// 	return
-	// }
+	openRoom := start(&user)
+	if (openRoom == &Room{}) {
+		log.Fatal("Nie mozna było dołaczyć lub utworzyc pokoju")
+		return
+	}
 
 	for {
 		_, m, err := conn.ReadMessage()
@@ -112,35 +109,24 @@ func WsEndpoint(w http.ResponseWriter, r *http.Request) {
 			break
 		}
 		log.Println(msg)
-		// if msg == "-skip-" {
-		// 	skip(&user, openRoom)
-		// } else if msg == "-stop-" {
-		// 	stop(&user, openRoom)
-		// } else if msg == "-start-" {
-		// 	start(&user)
-		// }
+		if msg == "-skip-" {
+			skip(&user, openRoom)
+		} else if msg == "-stop-" {
+			stop(&user, openRoom)
+		}
 
-		// message, cut := strings.CutPrefix(msg, "-m-")
-		// if openRoom.IsFull() && cut {
-		// 	if openRoom.User1.Id == user.Id {
-		// 		openRoom.User2.WriteMessage(message)
-		// 	} else {
-		// 		openRoom.User1.WriteMessage(message)
-		// 	}
-		// }
+		message, cut := strings.CutPrefix(msg, "-m-")
+		if openRoom.IsFull() && cut {
+			if openRoom.User1.Id == user.Id {
+				openRoom.User2.WriteMessage(message)
+			} else {
+				openRoom.User1.WriteMessage(message)
+			}
+		}
 	}
 }
 
 func stop(user *User, room *Room) {
-	id := uuid.UUID{}
-	if room.User1.Id == user.Id {
-		id = room.User2.Id
-	} else {
-		id = room.User1.Id
-	}
-	if (id != uuid.UUID{}) {
-		user.UsersMetIds = append(user.UsersMetIds, id)
-	}
 	room.DeleteUserFromRoom(user.Id)
 }
 
@@ -152,13 +138,6 @@ func skip(user *User, room *Room) {
 func main() {
 	router := mux.NewRouter()
 	router.HandleFunc("/ws", WsEndpoint)
-	router.HandleFunc("/users", func(w http.ResponseWriter, r *http.Request) {
-		s := ""
-		for _, u := range users {
-			s += fmt.Sprintf("\nId - %v\n Users met - %v", u.Id, u.UsersMetIds)
-		}
-		w.Header().Add("body", s)
-	})
 	fmt.Println("- Server started 🎉")
 	log.Fatal(http.ListenAndServe(":4500", router))
 }

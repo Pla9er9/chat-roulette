@@ -3,6 +3,7 @@ package main
 import (
 	m "chat_roulete/models"
 	"fmt"
+	"os"
 
 	"github.com/google/uuid"
 )
@@ -12,14 +13,19 @@ func start(user *m.User) *m.Room {
 		r, err := CreateRoom(*user)
 		if err != nil {
 			fmt.Println(err)
+			os.Exit(0)
 			return nil
 		}
 		rooms = append(rooms, r)
 		return r
 	} else {
 		for i := 0; i < len(rooms); i++ {
-			if !rooms[i].IsFull() && !was(user.UsersMetIds, rooms[i].User1.Id) {
-				JoinRoom(rooms[i], *user)
+			if !rooms[i].IsFull() {
+				err := JoinRoom(rooms[i], *user)
+				if err != nil {
+					fmt.Println(err)
+					os.Exit(0)
+				}
 				return rooms[i]
 			}
 		}

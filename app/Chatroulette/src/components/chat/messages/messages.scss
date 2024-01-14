@@ -8,6 +8,8 @@
     overflow-y:auto;
     display: flex;
     flex-direction: column;
+    border-left: solid 1px #a3fa8010;
+    border-right: solid 1px #a3fa8010;
 }
 
 .message {
@@ -29,11 +31,11 @@
 }
 
 .my-message {
-    margin: 8px 15px 0 auto;
+    margin: 8px 25px 0 auto;
 }
 
 .not-my-message {
-    margin: 8px auto 0 15px;
+    margin: 8px auto 0 25px;
     background-color: inherit;
     border: solid 1px rgb(35, 65, 35);
 }
