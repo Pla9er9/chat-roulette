@@ -4,11 +4,10 @@ import Messages from "./messages/messages";
 import Navbar from "./navbar/navbar";
 import PropTypes from "prop-types";
 
-
 function Chat({ stop }) {
     let [sendMessage, setSendMessage] = useState(undefined);
     let [online, setOnline] = useState("0");
-    let [status, setStatus] = useState("Szukanie obcego")
+    let [status, setStatus] = useState("Szukanie obcego");
     let [messages, setMessages] = useState([]);
     let [socket, setSocket] = useState(null);
 
@@ -17,18 +16,21 @@ function Chat({ stop }) {
         if (msg.data.startsWith("-server-online-")) {
             console.log(msg.data);
             console.log(msg.data.replace("-server-online-", ""));
-            setOnline(msg.data.replace("-server-online-", ""))
+            setOnline(msg.data.replace("-server-online-", ""));
             return false;
         }
         let messagesDiv = document.getElementById("messages");
         switch (msg.data) {
             case "-server-found-":
-                setMessages([...messages, "Znaleziono obcego"])
-                setStatus("Połączono")
+                setMessages([...messages, ["Znaleziono obcego", false]]);
+                setStatus("Połączono");
                 break;
             case "-server-disconected-":
-                setMessages([...messages, "Połaczenie z obcym zerwane"])
-                setStatus("Szukanie obcego")
+                setMessages([
+                    ...messages,
+                    ["Połaczenie z obcym zerwane", false],
+                ]);
+                setStatus("Szukanie obcego");
                 break;
             default:
                 setMessages((m) => (m = [...m, [msg.data, false]]));
@@ -42,14 +44,14 @@ function Chat({ stop }) {
             socket = new WebSocket("ws://localhost:4500/ws");
             socket.onerror = (e) => {
                 console.log(e);
-                setStatus("Error occured please restart or try later")
+                setStatus("Error occured please restart or try later");
                 socket.close();
             };
             socket.onclose = (e) => {
                 console.log(e);
             };
-            socket.onmessage = onMessage
-            socket
+            socket.onmessage = onMessage;
+            socket;
             setSendMessage(
                 (ssm) =>
                     (ssm = (msg) => {
@@ -71,6 +73,7 @@ function Chat({ stop }) {
                     online={online}
                     stop={() => {
                         setMessages((m) => (m = []));
+                        socket.send("-stop-");
                         socket.close();
                         setSocket((s) => (s = null));
                         stop();

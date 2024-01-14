@@ -12,14 +12,14 @@ func CreateRoom(creator User) (*Room, error) {
 		return &Room{}, fmt.Errorf("server error")
 	}
 	return &Room{
-		Id:     id,
-		User1:  creator,
-		User2:  User{},
+		Id:    id,
+		User1: creator,
+		User2: User{},
 	}, nil
 }
 
 func JoinRoom(room *Room, user User) error {
-	if (room.IsFull()) {
+	if room.IsFull() {
 		return fmt.Errorf("room is full already")
 	}
 	if (room.User1.Id == User{}.Id) {
@@ -29,7 +29,7 @@ func JoinRoom(room *Room, user User) error {
 	} else {
 		return fmt.Errorf("room doesnt has one user")
 	}
-	if (room.IsFull()) {
+	if room.IsFull() {
 		room.SendMessage("-server-found-")
 	}
 	return nil

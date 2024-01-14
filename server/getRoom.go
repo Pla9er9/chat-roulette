@@ -41,7 +41,7 @@ func start(user *m.User) *m.Room {
 
 func was(arr []uuid.UUID, id uuid.UUID) bool {
 	for _, _id := range arr {
-		if (_id == id) {
+		if _id == id {
 			return true
 		}
 	}

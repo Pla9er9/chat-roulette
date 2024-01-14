@@ -54,8 +54,8 @@ func WsEndpoint(w http.ResponseWriter, r *http.Request) {
 	}
 
 	user := User{
-		Id:          id,
-		Conn:        conn,
+		Id:   id,
+		Conn: conn,
 	}
 
 	fmt.Println("- Connect")
@@ -67,6 +67,11 @@ func WsEndpoint(w http.ResponseWriter, r *http.Request) {
 		u.WriteMessage(fmt.Sprint("-server-online-", len(users)))
 	}
 
+	openRoom := start(&user)
+	if (openRoom == &Room{}) {
+		log.Fatal("Nie mozna było dołaczyć lub utworzyc pokoju")
+		return
+	}
 	closeHandler := conn.CloseHandler()
 	conn.SetCloseHandler(func(code int, text string) error {
 		fmt.Println("- Disconect")
@@ -80,6 +85,8 @@ func WsEndpoint(w http.ResponseWriter, r *http.Request) {
 		}
 
 		users = remove[User](users, index)
+		stop(&user, openRoom)
+		openRoom.SendMessage("-server-disconected-")
 		for i, r := range rooms {
 			if r.User1.Id == user.Id {
 				rooms[i].User1 = User{}
@@ -94,11 +101,6 @@ func WsEndpoint(w http.ResponseWriter, r *http.Request) {
 		}
 		return closeHandler(code, text)
 	})
-	openRoom := start(&user)
-	if (openRoom == &Room{}) {
-		log.Fatal("Nie mozna było dołaczyć lub utworzyc pokoju")
-		return
-	}
 
 	for {
 		_, m, err := conn.ReadMessage()

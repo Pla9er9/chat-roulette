@@ -1,6 +1,6 @@
 import { useState } from "react";
 import "./messageInput.scss";
-import PropTypes from 'prop-types'
+import PropTypes from "prop-types";
 
 function MessageInput({ sendMessage }) {
     let [value, setValue] = useState("");
@@ -36,7 +36,7 @@ function MessageInput({ sendMessage }) {
 }
 
 MessageInput.propTypes = {
-    sendMessage: PropTypes.func
-}
+    sendMessage: PropTypes.func,
+};
 
-export default MessageInput
+export default MessageInput;

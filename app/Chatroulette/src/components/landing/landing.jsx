@@ -1,5 +1,5 @@
 import "./landing.scss";
-import PropTypes from 'prop-types'
+import PropTypes from "prop-types";
 
 function Landing({ onclick }) {
     return (
@@ -14,15 +14,13 @@ function Landing({ onclick }) {
                 </span>{" "}
                 <br /> people
             </h1>
-            <button onClick={onclick}>
-                Try now
-            </button>
+            <button onClick={onclick}>Try now</button>
         </div>
     );
 }
 
 Landing.propTypes = {
-    onclick: PropTypes.func
-}
+    onclick: PropTypes.func,
+};
 
-export default Landing
+export default Landing;
