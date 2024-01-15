@@ -58,7 +58,6 @@ func WsEndpoint(w http.ResponseWriter, r *http.Request) {
 		Conn: conn,
 	}
 
-	fmt.Println("- Connect")
 	users = append(users, user)
 	for _, u := range users {
 		if err != nil {
@@ -74,7 +73,6 @@ func WsEndpoint(w http.ResponseWriter, r *http.Request) {
 	}
 	closeHandler := conn.CloseHandler()
 	conn.SetCloseHandler(func(code int, text string) error {
-		fmt.Println("- Disconect")
 		var index = 0
 		for i, u := range users {
 			if u.Id == user.Id {
@@ -110,7 +108,6 @@ func WsEndpoint(w http.ResponseWriter, r *http.Request) {
 			conn.Close()
 			break
 		}
-		log.Println(msg)
 		if msg == "-skip-" {
 			skip(&user, openRoom)
 		} else if msg == "-stop-" {

@@ -12,10 +12,7 @@ function Chat({ stop }) {
     let [socket, setSocket] = useState(null);
 
     function onMessage(msg) {
-        console.log(msg.data);
         if (msg.data.startsWith("-server-online-")) {
-            console.log(msg.data);
-            console.log(msg.data.replace("-server-online-", ""));
             setOnline(msg.data.replace("-server-online-", ""));
             return false;
         }
@@ -49,6 +46,7 @@ function Chat({ stop }) {
             };
             socket.onclose = (e) => {
                 console.log(e);
+                setStatus("Error occured please restart or try later");
             };
             socket.onmessage = onMessage;
             socket;
